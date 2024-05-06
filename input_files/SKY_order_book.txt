@@ -1,0 +1,123 @@
+  _____________  __._____.___. ________   ____ ___  _____    __________________
+ /   _____/    |/ _|\__  |   | \_____  \ |    |   \/  _  \   \      \__    ___/
+ \_____  \|      <   /   |   |  /  / \  \|    |   /  /_\  \  /   |   \|    |   
+ /        \    |  \  \____   | /   \_/.  \    |  /    |    \/    |    \    |   
+/_______  /____|__ \ / ______| \_____\ \_/______/\____|__  /\____|__  /____|   
+        \/        \/ \/               \__>               \/         \/         
+		
+-------------------------------------------------------------------------------
+*** ORDER BOOK - ZADANIE REKRUTACYJNE
+-------------------------------------------------------------------------------
+
+1. Karnet (Order Book) kest podstawową strukturą danych wykorzystywaną na każdej giełdzie.
+   Jest to zbiór wszystkich aktywnych zleceń typu limit złożonych na daną akcję, kontrakt terminowy,
+   opcję lub dowolny inny walor będący przedmiotem obrotu. Składając zlecenie typu limit określamy nastepujące
+   atrybuty:
+   
+   * Strona zlecenia: BUY (BID) lub SELL (ASK),
+   * Ilość (QTY) > 0,
+   * Cena Limit Price (LP): warunek cenowy określający najwyższą cenę po ktorej chcemy kupić dla BUY lub
+     najniższą cenę po ktorej chcemy sprzedać (SELL).
+	 
+   Najlepsze oferty w karnecie definiujemy jako:
+   
+   * BEST BID (B0) - najlepsza oferta kupna - MAX(LP) po wszystkich zleceniach typu BUY (BID).
+   * BEST ASK (A0) - najlepsza oferta sprzedażi - MIN(LP) po wszystkich zleceniach typu SELL (ASK).
+   
+   Dla każdego poprawnego karnetu zawsze spełniona jest nierówność:
+   
+   * B0 < A0 - to znaczy zlecenia znajdujące sie po stronie BID będą miały zawsze mniejsze ceny niż
+     zlecenia znajdujące się po stronie ASK. Wyjątkiem są fazy niepłynne, typu fixing, itd...
+	 
+   Dla uproszczenia założmy, że kolejność zleceń w karnecie określa jedynie cena oraz OrderId nadawany przez giełdę:
+   
+   * Dla strony BID zlecenia posortowane są wg ceny malejąco i OrderId rosnąco, najlepsza cena (B0) jest największa
+     po stronie BID i zlecenia stojące z ceną B0 wykonają się jako pierwsze. W ramach tej samej ceny o kolejności
+	 decyduje OrderId - wartości mniejsze są wczesniejsze i wykonają się szybciej.
+   * Dla strony ASK zlecenia posortowane są wg ceny rosnąco i OrderId rosnąco, najlepsza cena (A0) jest najmniejsza
+     po stronie ASK i zlecenia stojące z ceną A0 wykonają się jako pierwsze. W ramach tej samej ceny o kolejności
+	 decyduje OrderId - wartości mniejsze są wczesniejsze i wykonają się szybciej.
+ 
+2. Opis zadania
+
+   * Zadanie polega na zbudowaniu karnetu na podstawie danych wejściowych a następnie wyznaczeniu
+     wartości BEST BID (B0) i BEST ASK (A0).
+   * Należy wczytać plik wejściowy ticks.raw i zapisać ticks_result.csv z uzupełnionymi kolumnami.
+   * Pierwsze 2000 wierszy prawidłowo zdekodowanego pliku wejściowego ticks.raw znajduje się w pliku ticks_sample.csv
+   * Pierwsze 2000 wierszy prawidłowo uzupełnionego pliku wynikowego znajduje się w pliku ticks_result_sample.csv.
+   * Przyjmujemy konwencję, że jeżeli jakiejś wartości nie ma, wstawiamy ciąg pusty w postaci tekstowej lub 0 w postabi binarnej.
+   * Przyjmujemy, że dla SourceTime >= 24300006000 i SourceTime <= 53400000000 karnet jest zawsze poprawny,
+     tzn. zachodzi B0 < A0.
+   * Dane wejściowe pochodzą z prawdziwej giełdy i stanowią kompletny zapis sesji pewnego instrumentu.
+
+3. Opis formatu wejściowego ticks.raw
+
+   Konwencja zapisu typów całkowitych: big endian!
+
+   * (64bit int) SourceTime - znacznik czasowy,
+   * (byte)      Side - strona karnetu: '1' strona BID, '2' strona ASK,
+   * (byte)      Action - akcja do wykonania:
+     - 'Y' lub 'F' - wyczyść cały karnet,
+	 - 'A' - dodaj zlecenie do karnetu (mozna przyjąć, że jeżeli zlecenie o takim OrderId juz istnieje, to zastąp),
+	 - 'M' - zmodyfikuj istniejące zlecenie w karnecie (można przyjąć że jeżeli nie ma takiego OrderId w karnecie to potraktuj jak 'A'),
+	 - 'D' - usuń zlecenie z karnetu (można przyjąć, że jeżeli nie ma takiego OrderId to nic nie rób),
+   * (64bit int) OrderId - unikalne ID zlecenia,
+   * (32bit int) Price - cena na jakiej ustawia się zlecenie w karnecie,
+   * (32bit int) Qty - wielkość zlecenia (ilość) jaka ustawia się w karnecie.
+
+   W podstaci 'excelowej' mogło by to wyglądać następująco:
+
+   SourceTime;Side;Action;OrderId;Price;Qty
+   10898664087;;F;0;0;0
+   10900010928;1;Y;20220103000005;1;1
+   10900071896;2;Y;20220119023943;2368;1
+   10900071896;2;Y;20220119024012;2398;1
+   10900073173;2;Y;20220121000203;2299;1
+   10900073178;2;Y;20220121001035;2321;1
+   10900085902;2;Y;20220210000589;2329;1
+   10900118828;2;Y;20220317009855;2280;4
+   10900196984;2;Y;20220420000005;2138;1
+   10900197746;2;Y;20220420005048;2112;1
+   10900201783;2;Y;20220421000007;2072;1
+   10900206304;2;Y;20220421000009;2049;1
+   10900206446;2;Y;20220422000745;2026;1
+   10900220512;2;Y;20220427030429;1939;1
+   10900298066;2;Y;20220524000014;1870;1
+   10900301457;2;Y;20220524030396;1948;1
+   10900332000;2;Y;20220530022751;1896;1
+   10900332737;2;Y;20220530026923;1928;1
+   10900332813;2;Y;20220530027064;1956;1
+   10900335824;2;Y;20220531000013;1883;1
+   10900337120;2;Y;20220531002381;1875;1
+
+4. Opis kolumn do wypełnienia w pliku wynikowym ticks_result.csv
+
+   Wynik zapisujemy tylko tekstowo w postaci csv, postać binarna nie jest wymagana.
+
+   * SourceTime, Side, Action, OrderId, Price, Qty - przepisać z wejścia
+   * B0 - BEST BID, najlepsza (czyli najwyższa) cena po stronie BID,
+   * BQ0 - suma Qty wszystkich zleceń z ceną B0 po stronie BID,
+   * BN0 - liczba zleceń z ceną B0 po stronie BID,
+   * A0 - BEST ASK, najlepsza (czyli najmniejsza) cena po stronie ASK,
+   * AQ0 - suma Qty wszystkich zleceń z ceną A0 po stronie ASK,
+   * AN0 - liczba zleceń z ceną A0 po stronie ASK.
+   
+   Wyznaczenie wartości B0 i A0 jest obligatoryjne.
+   Wyznaczenie wartości BQ0, BN0, AQ0, AN0 - podwyższy wartość merytoryczną rozwiązania.
+
+5. Uwagi implementacyjne
+
+   * Zastanów się jakie struktury danych będą optymalne do budowy karnetu.
+   * Kod podziel na 3 etapy: wczytanie danych, budowa karnetu na podstawie danych, zapis wyniku.
+   * Dla fazy budowania karnetu wypisz na konsolę czas całkowity budowy karnetu oraz per tik (wiersz) w mikrosekundach [us], NIE interesuje nas czas wczytania i zapisu.
+   * TIP: jeżeli obawiasz się o pomiar czasu na nie rozgrzanym kodzie i danych, to twoje obawy są słuszne, możesz wykonać budowę karnetu kilka razy, wypisać czasy z każdego przebiegu, a my wybierzemy najlepszy.
+   * Wersja c++ dowolna, ale tak zeby dało się skompilować za pomocą standardowych kompilatorów:
+       * Windows - Visual Studio 2022,
+	   * Linux - GCC Linux + jakiś make, cmake, itd... + krótka instrukcja jak odpalać. Jeżeli do builda będą potrzebne jakieś liby - prośba o wskazanie co doinstalować.
+
+6. Kryteria oceny
+
+   * Poprawność merytoryczna - B0 i A0 są obligatoryjne.
+   * BQ0, BN0, AQ0, AN0 - podwyższa wartość merytoryczną.
+   * Czas wykonania - zajmujemy się HFT, więc czas to pieniądz :) wiadomo, im mniejszy tym lepiej.
+   * Jakość, zwartość, czytelność kodu, zastosowanie adekwatnych struktur danych.
