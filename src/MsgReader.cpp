@@ -50,11 +50,8 @@ namespace quant {
 
     template<typename heap>
     void processRemove(OrderBook<heap>& orderBook, Pattern& tick) {
-        orderBook.popOrderFromGroup(tick.Price, tick.OrderId);
+        orderBook.popOrderFromGroup(tick.Price, tick.OrderId);  // Removes price if it's needed
         orderBook.popOrder(tick.OrderId);
-        if (0 == orderBook.noOrders(tick.Price)) {
-            orderBook.popPrice(tick.Price);
-        }
     }
 
     template<typename bidHeap, typename askHeap>

@@ -57,10 +57,14 @@ namespace quant {
         _groupOrders[price].insert(orderID);
     }
 
-    /// @comment If OrderID doesn't exist, removing will be ignore without exception
+    /// @comment If OrderID doesn't exist, removing will be ignore without exception. Remove also price if needed
     template<typename heap>
     void OrderBook<heap>::popOrderFromGroup(uint32_t price, uint64_t orderID) {
         _groupOrders[price].erase(orderID);
+        if (_groupOrders[price].empty()) {
+            _groupOrders.erase(price);
+            popPrice(price);
+        }
     }
 
     template<typename heap>

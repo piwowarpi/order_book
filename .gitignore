@@ -4,3 +4,4 @@ build
 .idea
 input_files/test_*
 result_files/*
+tmp*
