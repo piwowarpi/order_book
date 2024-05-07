@@ -6,8 +6,9 @@
  */
 
 #include <arpa/inet.h>
-#include <iostream>
+#include <chrono>
 #include <fstream>
+#include <iostream>
 #include <string>
 
 #include "MsgReader.h"
@@ -135,28 +136,38 @@ namespace quant {
     }
 
     void MsgReader::read() {
-        try {
-            std::ifstream file(INPUT_FILE, std::ios::out | std::ios::binary);
-            std::ofstream csvFile(OUTPUT_FILE);
+        std::ifstream file(INPUT_FILE, std::ios::out | std::ios::binary);
+        std::ofstream csvFile(OUTPUT_FILE);
 
-            OrderBook<bidHeap> bidOrderBook;
-            OrderBook<askHeap> askOrderBook;
+        OrderBook<bidHeap> bidOrderBook;
+        OrderBook<askHeap> askOrderBook;
 
-            // Write header to CSV file
-            csvFile << "SourceTime;Side;Action;OrderId;Price;Qty;B0;BQ0;BN0;A0;AQ0;AN0\n";
+        // Write header to CSV file
+        csvFile << "SourceTime;Side;Action;OrderId;Price;Qty;B0;BQ0;BN0;A0;AQ0;AN0\n";
 
-            while (file.peek() != EOF) {
-                Pattern tick;
-                readBinaryFile(file, tick);
-                runActions<bidHeap, askHeap>(bidOrderBook, askOrderBook, tick);
-                csvFile << printCSV(tick);
-            }
-            file.close();
-            csvFile.close();
+        // Total duration of all ticks
+        std::chrono::microseconds totalDuration(0);
 
-            std::cout << "CSV file created successfully!" << std::endl;
-        } catch (...) {
-            std::cout << "Finished unsuccessfully!" << std::endl;
+        while (file.peek() != EOF) {
+            Pattern tick;
+            readBinaryFile(file, tick);
+
+            // Run tick for build Order Book
+            auto start = std::chrono::high_resolution_clock::now();
+            runActions<bidHeap, askHeap>(bidOrderBook, askOrderBook, tick);
+            auto end = std::chrono::high_resolution_clock::now();
+
+            // Printing on console time of tick
+            auto tickDuration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+            std::cout << tickDuration.count() << " us" << std::endl;
+            totalDuration += tickDuration;
+
+            // Print OB to file
+            csvFile << printCSV(tick);
         }
+        file.close();
+        csvFile.close();
+
+        std::cout << "Total time of building OB: " << totalDuration.count() << " us" << std::endl;
     }
 } // quant
