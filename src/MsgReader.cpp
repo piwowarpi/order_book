@@ -35,23 +35,21 @@ namespace quant {
 
     template<typename heap>
     void processAdd(OrderBook<heap>& orderBook, Pattern& tick) {
-        orderBook.addOrderToGroup(tick.Price, tick.OrderId);
         orderBook.addOrder(tick.OrderId, Order{tick.Qty});
-        orderBook.addPrice(tick.Price);
+        orderBook.addOrderToGroup(tick.Price, tick.OrderId);    // Adding unique Price
     }
 
     /// @comment From delivered instruction and implemented logic - modify process is exactly same like @fn processAdd
     template<typename heap>
     void processModify(OrderBook<heap>& orderBook, Pattern& tick) {
-        orderBook.addOrderToGroup(tick.Price, tick.OrderId);
         orderBook.addOrder(tick.OrderId, Order{tick.Qty});
-        orderBook.addPrice(tick.Price);
+        orderBook.addOrderToGroup(tick.Price, tick.OrderId);    // Adding unique Price
     }
 
     template<typename heap>
     void processRemove(OrderBook<heap>& orderBook, Pattern& tick) {
-        orderBook.popOrderFromGroup(tick.Price, tick.OrderId);  // Removes price if it's needed
         orderBook.popOrder(tick.OrderId);
+        orderBook.popOrderFromGroup(tick.Price, tick.OrderId);  // Removes price if it's needed
     }
 
     template<typename bidHeap, typename askHeap>
@@ -59,8 +57,8 @@ namespace quant {
         if (bidOrderBook.isAnyPrice()) {
             uint32_t bestPrice = bidOrderBook.bestPrice();
             tick.B0 = std::to_string(bestPrice);
-            tick.BQ0 = std::to_string(bidOrderBook.noShares(bestPrice));
-            tick.BN0 = std::to_string(bidOrderBook.noOrders(bestPrice));
+            tick.BQ0 = std::to_string(bidOrderBook.getBestShares());
+            tick.BN0 = std::to_string(bidOrderBook.getBestOrders());
         }
         else {
             tick.B0 = "";
@@ -70,8 +68,8 @@ namespace quant {
         if (askOrderBook.isAnyPrice()) {
             uint32_t bestPrice = askOrderBook.bestPrice();
             tick.A0 = std::to_string(bestPrice);
-            tick.AQ0 = std::to_string(askOrderBook.noShares(bestPrice));
-            tick.AN0 = std::to_string(askOrderBook.noOrders(bestPrice));
+            tick.AQ0 = std::to_string(askOrderBook.getBestShares());
+            tick.AN0 = std::to_string(askOrderBook.getBestOrders());
         }
         else {
             tick.A0 = "";

@@ -8,6 +8,7 @@
  * @mail    m.piwowar2@gmail.com
  */
 
+#include <cmath>
 #include <cstdint>
 #include <unordered_map>
 #include <unordered_set>
@@ -92,6 +93,12 @@ namespace quant {
          */
         uint32_t noShares(uint32_t price);
 
+        /// @brief Returning number of all Orders in Order Book related to the best price
+        uint32_t getBestOrders();
+
+        /// @brief Returning number of all shares (Qty) in Order Book related to the best price
+        uint32_t getBestShares();
+
         /// @brief clear all poles in Order Book
         void clearAll();
 
@@ -107,6 +114,12 @@ namespace quant {
         std::unordered_map<uint64_t, Order> _orders;
         /// @brief Map to store set of OrderIDs with same price
         std::unordered_map<uint32_t, std::unordered_set<uint64_t>> _groupOrders;
+        /// @brief Best price in _heap
+        uint32_t _bestPrice = 0;
+        /// @breif Number of shares (Qty) in Order Book related to best price
+        uint32_t _noShares = 0;
+        /// @brief Number of orders in Order Book related to best price
+        uint32_t _noOrders = 0;
     };
 } // quant
 

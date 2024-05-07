@@ -8,12 +8,13 @@
 #include "OrderBook.h"
 
 namespace quant {
-    /// @comment Only unique prices are stored
+    /// @comment Only unique prices are stored - should be run always as first method in actions
     template<typename heap>
     void OrderBook<heap>::addPrice(uint32_t price) {
         if (_uniquePrices.find(price) == _uniquePrices.end()) {
             _heap.push(price);
             _uniquePrices.insert(price);
+            _bestPrice = (_heap.top() == _bestPrice ? _bestPrice : _heap.top());
         }
     }
 
@@ -37,6 +38,7 @@ namespace quant {
     void OrderBook<heap>::popBestPrice() {
         _uniquePrices.erase(_heap.top());
         _heap.pop();
+        _bestPrice = _heap.top();
     }
 
     /// @comment If orderID already exist -> will be replace with new one
@@ -54,7 +56,12 @@ namespace quant {
     /// @comment If orderID already exist, will be ignore as only unique values are stored
     template<typename heap>
     void OrderBook<heap>::addOrderToGroup(uint32_t price, uint64_t orderID) {
+        addPrice(price);
         _groupOrders[price].insert(orderID);
+        if (price == bestPrice()) {
+            _noShares = noShares(price);
+            _noOrders = noOrders(price);
+        }
     }
 
     /// @comment If OrderID doesn't exist, removing will be ignore without exception. Remove also price if needed
@@ -65,6 +72,8 @@ namespace quant {
             _groupOrders.erase(price);
             popPrice(price);
         }
+        _noShares = noShares(_bestPrice);
+        _noOrders = noOrders(_bestPrice);
     }
 
     template<typename heap>
@@ -82,11 +91,24 @@ namespace quant {
     }
 
     template<typename heap>
+    uint32_t OrderBook<heap>::getBestOrders() {
+        return _noOrders;
+    }
+
+    template<typename heap>
+    uint32_t OrderBook<heap>::getBestShares() {
+        return _noShares;
+    }
+
+    template<typename heap>
     void OrderBook<heap>::clearAll() {
         _heap = heap();
         _uniquePrices.clear();
         _orders.clear();
         _groupOrders.clear();
+        _bestPrice = 0;
+        _noShares = 0;
+        _noOrders = 0;
     }
 
     template<typename heap>
