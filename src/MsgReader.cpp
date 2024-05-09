@@ -28,7 +28,7 @@ namespace quant {
     }
 
     template<typename bidHeap, typename askHeap>
-    void processClear(OrderBook<bidHeap>& bidOrderBook, OrderBook<askHeap>& askOrderBook, Pattern& tick) {
+    void processClear(OrderBook<bidHeap>& bidOrderBook, OrderBook<askHeap>& askOrderBook) {
         bidOrderBook.clearAll();
         askOrderBook.clearAll();
     }
@@ -82,11 +82,11 @@ namespace quant {
     static void runActions(OrderBook<bidHeap>& bidOrderBook, OrderBook<askHeap>& askOrderBook, Pattern& tick) {
         switch(tick.Action) {
             case Action::clear1:
-                processClear<bidHeap, askHeap>(bidOrderBook, askOrderBook, tick);
+                processClear<bidHeap, askHeap>(bidOrderBook, askOrderBook);
                 processTick<bidHeap, askHeap>(bidOrderBook, askOrderBook, tick);
                 break;
             case Action::clear2:
-                processClear<bidHeap, askHeap>(bidOrderBook, askOrderBook, tick);
+                processClear<bidHeap, askHeap>(bidOrderBook, askOrderBook);
                 processTick<bidHeap, askHeap>(bidOrderBook, askOrderBook, tick);
                 break;
             case Action::add:

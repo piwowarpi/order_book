@@ -52,7 +52,7 @@ namespace quant {
      * @param tick Struct to store data per tick
      */
     template<typename bidHeap, typename askHeap>
-    static void processClear(OrderBook<bidHeap>& bidOrderBook, OrderBook<askHeap>& askOrderBook, Pattern& tick);
+    static void processClear(OrderBook<bidHeap>& bidOrderBook, OrderBook<askHeap>& askOrderBook);
 
     /**
      * @brief Dedicated steps for adding Order (tick) to Order Book action
