@@ -15,7 +15,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 
     set(CMAKE_CXX_FLAGS "-Wall -Wextra")
     set(CMAKE_CXX_FLAGS_DEBUG "-g")
-    set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+    set(CMAKE_CXX_FLAGS_RELEASE "-Ofast")
 
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 endif()
