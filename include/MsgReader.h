@@ -9,8 +9,10 @@
  */
 
 #include <cstdint>
+#include <limits>
 #include <string>
 
+#include <chrono>
 #include "OrderBook.h"
 
 /// @namespace "quant" for Quant Sky dedicated solution
@@ -29,12 +31,12 @@ namespace quant {
         uint64_t OrderId;
         uint32_t Price;
         uint32_t Qty;
-        std::string B0;
-        std::string BQ0;
-        std::string BN0;
-        std::string A0;
-        std::string AQ0;
-        std::string AN0;
+        uint32_t B0 = UINT32_MAX;
+        uint32_t BQ0 = UINT32_MAX;
+        uint32_t BN0 = UINT32_MAX;
+        uint32_t A0 = UINT32_MAX;
+        uint32_t AQ0 = UINT32_MAX;
+        uint32_t AN0 = UINT32_MAX;
     };
 
      /**

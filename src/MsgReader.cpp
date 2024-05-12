@@ -57,25 +57,15 @@ namespace quant {
     void processTick(OrderBook<bidHeap>& bidOrderBook, OrderBook<askHeap>& askOrderBook, Pattern& tick) {
         if (bidOrderBook.isAnyPrice()) {
             uint32_t bestPrice = bidOrderBook.bestPrice();
-            tick.B0 = std::to_string(bestPrice);
-            tick.BQ0 = std::to_string(bidOrderBook.getBestShares());
-            tick.BN0 = std::to_string(bidOrderBook.getBestOrders());
-        }
-        else {
-            tick.B0 = "";
-            tick.BQ0 = "";
-            tick.BN0 = "";
+            tick.B0 = bestPrice;
+            tick.BQ0 = bidOrderBook.getBestShares();
+            tick.BN0 = bidOrderBook.getBestOrders();
         }
         if (askOrderBook.isAnyPrice()) {
             uint32_t bestPrice = askOrderBook.bestPrice();
-            tick.A0 = std::to_string(bestPrice);
-            tick.AQ0 = std::to_string(askOrderBook.getBestShares());
-            tick.AN0 = std::to_string(askOrderBook.getBestOrders());
-        }
-        else {
-            tick.A0 = "";
-            tick.AQ0 = "";
-            tick.AN0 = "";
+            tick.A0 = bestPrice;
+            tick.AQ0 = askOrderBook.getBestShares();
+            tick.AN0 = askOrderBook.getBestOrders();
         }
     }
 
@@ -111,23 +101,29 @@ namespace quant {
     }
 
     std::string printCSV(Pattern& tick) {
-        std::string csvStr = (std::to_string(tick.SourceTime) + ";");
-        if (Side::ask != tick.Side && Side::bid != tick.Side) csvStr += ";";
+        std::string csvStr = (std::to_string(tick.SourceTime) + ';');
+        if (Side::ask != tick.Side && Side::bid != tick.Side) csvStr += ';';
         else {
             csvStr += tick.Side;
-            csvStr += ";";
+            csvStr += ';';
         }
         csvStr += tick.Action;
-        csvStr += ";";
-        csvStr += std::to_string(tick.OrderId) + ";";
-        csvStr += std::to_string(tick.Price) + ";";
-        csvStr += std::to_string(tick.Qty) + ";";
-        csvStr += tick.B0 + ';';
-        csvStr += tick.BQ0 + ';';
-        csvStr += tick.BN0 + ';';
-        csvStr += tick.A0 + ';';
-        csvStr += tick.AQ0 + ';';
-        csvStr += tick.AN0 + '\n';
+        csvStr += ';';
+        csvStr += std::to_string(tick.OrderId) + ';';
+        csvStr += std::to_string(tick.Price) + ';';
+        csvStr += std::to_string(tick.Qty) + ';';
+        if (tick.B0 != UINT32_MAX) csvStr += std::to_string(tick.B0) + ';';
+        else csvStr += ';';
+        if (tick.BQ0 != UINT32_MAX) csvStr += std::to_string(tick.BQ0) + ';';
+        else csvStr += ';';
+        if (tick.BN0 != UINT32_MAX) csvStr += std::to_string(tick.BN0) + ';';
+        else csvStr += ';';
+        if (tick.A0 != UINT32_MAX) csvStr += std::to_string(tick.A0) + ';';
+        else csvStr += ';';
+        if (tick.AQ0 != UINT32_MAX) csvStr += std::to_string(tick.AQ0) + ';';
+        else csvStr += ';';
+        if (tick.AN0 != UINT32_MAX) csvStr += std::to_string(tick.AN0) + '\n';
+        else csvStr += '\n';
         return csvStr;
     }
 
