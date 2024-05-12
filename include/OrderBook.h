@@ -13,7 +13,6 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <queue>
-#include "Order.h"
 
 /// @namespace "quant" for Quant Sky dedicated solution
 namespace quant {
@@ -59,7 +58,7 @@ namespace quant {
          * @param orderID key to map
          * @param order value to key
          */
-        void addOrder(uint64_t orderID, Order&& order);
+        void addOrder(uint64_t orderID, uint32_t order);
 
         /**
          * @brief Remove Order from a map
@@ -111,7 +110,7 @@ namespace quant {
         /// @brief Set to store only unique prices, which are stored in _heap too
         std::unordered_set<uint32_t> _uniquePrices;
         /// @brief Map to store Orders where Order ID is a key
-        std::unordered_map<uint64_t, Order> _orders;
+        std::unordered_map<uint64_t, uint32_t> _orders;
         /// @brief Map to store set of OrderIDs with same price
         std::unordered_map<uint32_t, std::unordered_set<uint64_t>> _groupOrders;
         /// @brief Best price in _heap

@@ -36,14 +36,14 @@ namespace quant {
 
     template<typename heap>
     void processAdd(OrderBook<heap>& orderBook, Pattern& tick) {
-        orderBook.addOrder(tick.OrderId, Order{tick.Qty});
+        orderBook.addOrder(tick.OrderId, tick.Qty);
         orderBook.addOrderToGroup(tick.Price, tick.OrderId);    // Adding unique Price
     }
 
     /// @comment From delivered instruction and implemented logic - modify process is exactly same like @fn processAdd
     template<typename heap>
     void processModify(OrderBook<heap>& orderBook, Pattern& tick) {
-        orderBook.addOrder(tick.OrderId, Order{tick.Qty});
+        orderBook.addOrder(tick.OrderId, tick.Qty);
         orderBook.addOrderToGroup(tick.Price, tick.OrderId);    // Adding unique Price
     }
 

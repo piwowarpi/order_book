@@ -1,11 +1,9 @@
 set(HEADER_LIST
         "${order_book_SOURCE_DIR}/include/MsgReader.h"
-        "${order_book_SOURCE_DIR}/include/Order.h"
         "${order_book_SOURCE_DIR}/include/OrderBook.h")
 
 add_library(quant_library
         MsgReader.cpp
-        Order.cpp
         OrderBook.cpp
         ${HEADER_LIST})
 

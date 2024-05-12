@@ -43,7 +43,7 @@ namespace quant {
 
     /// @comment If orderID already exist -> will be replace with new one
     template<typename heap>
-    void OrderBook<heap>::addOrder(uint64_t oderID, Order&& order) {
+    void OrderBook<heap>::addOrder(uint64_t oderID, uint32_t order) {
         _orders[oderID] = order;
     }
 
@@ -85,7 +85,7 @@ namespace quant {
     uint32_t OrderBook<heap>::noShares(uint32_t price) {
         uint32_t shares = 0;
         for (const auto& item : _groupOrders[price]) {
-            shares += _orders[item].getQty();
+            shares += _orders[item];
         }
         return shares;
     }
